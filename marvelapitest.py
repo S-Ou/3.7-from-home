@@ -40,7 +40,7 @@ class Base(QMainWindow):
         self.setAutoFillBackground(True)
         p = self.palette()
         # p.setColor(self.backgroundRole(), QColor("#ED1D24"))
-        p.setColor(self.backgroundRole(), QColor("#222222"))
+        p.setColor(self.backgroundRole(), QColor("#444444"))
         self.setPalette(p)
 
         layout = QVBoxLayout()  # Allows multiple layouts to be added and layed out vertically
@@ -112,19 +112,23 @@ class Main(QWidget):
         # self.line.move(80, 20)  # Positioning
         self.line.resize(1000, 80)
         self.line.move(int(size.width() / 2 - 500), 80)
-        self.line.setStyleSheet("QLabel { background-color : red; }")
+        self.line.setStyleSheet("border: 0px solid black");
         self.line.setFont(QFont('Rockwell', 27))
         # self.nameLabel.move(20, 20)
 
         self.title = QLabel(self)
         self.title.setText('Marvel API search')
+        self.title.resize(1000, 50)
+        self.title.setAlignment(QtCore.Qt.AlignCenter)
         p = QPalette()
         p.setColor(QPalette.Text, QtCore.Qt.white)
         self.title.setPalette(p)
         self.title.setStyleSheet("color: rgb(255,255,255)")
         self.title.setFont(QFont('Verdana', 30, QFont.Bold))
         # self.title.setStyleSheet("QLabel { font-weight: bold; font-size: 30px; }")
-        self.title.move(int(size.width() / 2 - self.title.width() * 2), 20)
+        # print(self.title.width())
+        # print(size.width())
+        self.title.move(int(size.width() / 2) - 500, 20)
 
         # pybutton = QPushButton('OK', self)  # OK button
         # # pybutton.clicked.connect(Infobox.wrapclickmethod())
@@ -189,6 +193,7 @@ class Infobox(QWidget):
     def wrapclickmethod(self, line):
         """Runs the asyncronous function through a non-asyncronous function"""
         self.line = line
+        if not self.line: self.line = "laiugfhalweiufaldiuohalwegiugwgiufalwefiuawe" # no way this will return any results, but it means that the API isn't fed literally nothing
         loopb = asyncio.new_event_loop()
         loopb.run_until_complete(self.clickmethod())
         loopb.close()
@@ -196,7 +201,7 @@ class Infobox(QWidget):
     async def clickmethod(self):
         """Search thing on click"""
         for i in reversed(range(self.grid_layout.count())):  # Clear grid
-            self.grid_layout.itemAt(i).widget().deleteLater()
+            self.grid_layout.itemAt(i).widget().setParent(None)
 
 
         # self.info.setText(await self.searchapi(self.line.text()))
