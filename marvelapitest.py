@@ -50,7 +50,7 @@ class Base(QMainWindow):
         wid = QWidget()
         wid.setLayout(layout)
 
-        # self.setFont(QFont("Beyno", 14))
+        self.setFont(QFont("Rockwell", 14))
 
         self.setCentralWidget(wid)
 
@@ -110,13 +110,16 @@ class Main(QWidget):
 
         # self.line.move(80, 20)  # Positioning
         self.line.resize(1000, 80)
-        self.line.move(int(size.width() / 2 - 500), 50)
+        self.line.move(int(size.width() / 2 - 500), 70)
+        self.line.setStyleSheet("QLabel { background-color : red; }")
+        self.line.setFont(QFont('Rockwell', 27))
         # self.nameLabel.move(20, 20)
 
         self.title = QLabel(self)
-        self.title.setText('Marvel API search    ')
-        self.title.setStyleSheet("QLabel { font-weight: bold; font-size: 30px; }")
-        self.title.move(int(size.width() / 2 - self.title.width()), 20)
+        self.title.setText('Marvel API search')
+        # self.title.setStyleSheet("QLabel { font-weight: bold; font-size: 30px; }")
+        self.title.setFont(QFont('Rockwell', 30))
+        self.title.move(int(size.width() / 2 - self.title.width() * 2), 20)
 
         # pybutton = QPushButton('OK', self)  # OK button
         # # pybutton.clicked.connect(Infobox.wrapclickmethod())
@@ -160,8 +163,11 @@ class Infobox(QWidget):
         self.info = QLabel(self)  # Where the comic info goes
         # self.info.setText('a\nb\nc')
         self.info.setText('Comic info displayed here')  # Placeholder
+        screen = app.primaryScreen()
+        size = screen.availableGeometry()
         self.info.move(20, 0)
-        self.info.resize(1000, 50)
+        self.info.resize(size.width() - 40, 50)
+        self.info.setWordWrap(True)
 
 
         # for x in range(3):
@@ -248,6 +254,8 @@ class Infobox(QWidget):
                 print(self.grid_layout.count())
                 i += 1
 
+        self.info.setText(f"Showing the top {self.grid_layout.count()} result(s)")
+
 
     def wrapseriesinfo(self, output, i):
         """Runs the asyncronous function through a non-asyncronous function"""
@@ -286,7 +294,7 @@ class Infobox(QWidget):
 
         limit = 20
 
-        print(comicfullt, comiccollt)
+        # print(comicfullt, comiccollt)
         ntotal = comicfullt - comiccollt
         nresults = []
         oresults = [i.dict for i in comiccoll.data.results]
