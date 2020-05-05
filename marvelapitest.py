@@ -39,7 +39,8 @@ class Base(QMainWindow):
 
         self.setAutoFillBackground(True)
         p = self.palette()
-        # p.setColor(self.backgroundRole(), QtCore.Qt.darkGray)
+        # p.setColor(self.backgroundRole(), QColor("#ED1D24"))
+        p.setColor(self.backgroundRole(), QColor("#222222"))
         self.setPalette(p)
 
         layout = QVBoxLayout()  # Allows multiple layouts to be added and layed out vertically
@@ -79,7 +80,7 @@ class Main(QWidget):
 
         self.worker = aworker  # Signal thing
        
-        self.setMaximumHeight(150)  # Height of box
+        self.setMaximumHeight(200)  # Height of box
 
         loop = asyncio.get_event_loop()
         loop.run_until_complete(self.open())
@@ -91,7 +92,7 @@ class Main(QWidget):
 
         self.setAutoFillBackground(True)
         p = self.palette()
-        # p.setColor(self.backgroundRole(), QtCore.Qt.darkRed)
+        p.setColor(self.backgroundRole(), QColor("#ED1D24"))
         self.setPalette(p)
 
         # print(self.height())
@@ -110,15 +111,19 @@ class Main(QWidget):
 
         # self.line.move(80, 20)  # Positioning
         self.line.resize(1000, 80)
-        self.line.move(int(size.width() / 2 - 500), 70)
+        self.line.move(int(size.width() / 2 - 500), 80)
         self.line.setStyleSheet("QLabel { background-color : red; }")
         self.line.setFont(QFont('Rockwell', 27))
         # self.nameLabel.move(20, 20)
 
         self.title = QLabel(self)
         self.title.setText('Marvel API search')
+        p = QPalette()
+        p.setColor(QPalette.Text, QtCore.Qt.white)
+        self.title.setPalette(p)
+        self.title.setStyleSheet("color: rgb(255,255,255)")
+        self.title.setFont(QFont('Verdana', 30, QFont.Bold))
         # self.title.setStyleSheet("QLabel { font-weight: bold; font-size: 30px; }")
-        self.title.setFont(QFont('Rockwell', 30))
         self.title.move(int(size.width() / 2 - self.title.width() * 2), 20)
 
         # pybutton = QPushButton('OK', self)  # OK button
@@ -160,6 +165,11 @@ class Infobox(QWidget):
 
     async def setup(self):
         """All the stuff in the box"""
+        self.setAutoFillBackground(True)
+        p = self.palette()
+        p.setColor(self.backgroundRole(), QtCore.Qt.white)
+        self.setPalette(p)
+
         self.info = QLabel(self)  # Where the comic info goes
         # self.info.setText('a\nb\nc')
         self.info.setText('Comic info displayed here')  # Placeholder
