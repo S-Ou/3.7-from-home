@@ -55,22 +55,20 @@ class Base(QMainWindow):
 
         self.setCentralWidget(wid)
 
+
 class WorkerThread(QtCore.QObject):
     """Signal thing that allows variables to be passed from 1 class to another"""
     # global searchclick
     searchclick = QtCore.pyqtSignal(PyQt5.QtWidgets.QLineEdit)
     line = ''
- 
+
     def __init__(self, parent=None):
         super(WorkerThread, self).__init__(parent)
-
 
     # @QtCore.pyqtSlot()
     def run(self):
         self.searchclick.connect(Infobox.clickmethod)
         self.searchclick.emit(self.line)
-
-    
 
 
 class Main(QWidget):
@@ -79,7 +77,7 @@ class Main(QWidget):
         super().__init__()
 
         self.worker = aworker  # Signal thing
-       
+
         self.setMaximumHeight(200)  # Height of box
 
         loop = asyncio.get_event_loop()
@@ -95,26 +93,16 @@ class Main(QWidget):
         p.setColor(self.backgroundRole(), QColor("#ED1D24"))
         self.setPalette(p)
 
-        # print(self.height())
-
         screen = app.primaryScreen()
         size = screen.availableGeometry()
 
-        # self.nameLabel = QLabel(self)  # "Search" before the search bpx
-        # self.nameLabel.setText('Search:')
-        # # self.nameLabel.setStyleSheet("QLabel { color : white; font-weight: bold; }")
-        # self.nameLabel.setStyleSheet("QLabel { font-weight: bold; }")
         self.line = QLineEdit(self)  # Search box
-        # self.line.returnPressed.connect(Infobox.wrapclickmethod())
         self.line.returnPressed.connect(self.runwrapper)  # On Enter
 
-
-        # self.line.move(80, 20)  # Positioning
         self.line.resize(1000, 80)
         self.line.move(int(size.width() / 2 - 500), 80)
-        self.line.setStyleSheet("border: 0px solid black");
+        self.line.setStyleSheet("border: 0px solid black")
         self.line.setFont(QFont('Rockwell', 27))
-        # self.nameLabel.move(20, 20)
 
         self.title = QLabel(self)
         self.title.setText('Marvel API search')
@@ -125,9 +113,6 @@ class Main(QWidget):
         self.title.setPalette(p)
         self.title.setStyleSheet("color: rgb(255,255,255)")
         self.title.setFont(QFont('Verdana', 30, QFont.Bold))
-        # self.title.setStyleSheet("QLabel { font-weight: bold; font-size: 30px; }")
-        # print(self.title.width())
-        # print(size.width())
         self.title.move(int(size.width() / 2) - 500, 20)
 
         # pybutton = QPushButton('OK', self)  # OK button
@@ -157,11 +142,9 @@ class Infobox(QWidget):
         self.worker.moveToThread(self.workerThread)
         self.workerThread.start()
 
-
         self.grid_layout = QGridLayout()
         self.grid_layout.setHorizontalSpacing(5)
         self.setLayout(self.grid_layout)
-
 
         loopc = asyncio.new_event_loop()
         loopc.run_until_complete(self.setup())
@@ -183,17 +166,10 @@ class Infobox(QWidget):
         self.info.resize(size.width() - 40, 50)
         self.info.setWordWrap(True)
 
-
-        # for x in range(3):
-        #     for y in range(3):
-        #         button = QPushButton(str(str(3*x+y)))
-        #         self.grid_layout.addWidget(button, x, y)
-
-
     def wrapclickmethod(self, line):
         """Runs the asyncronous function through a non-asyncronous function"""
+        if not line.text(): return
         self.line = line
-        if not self.line: self.line = "laiugfhalweiufaldiuohalwegiugwgiufalwefiuawe" # no way this will return any results, but it means that the API isn't fed literally nothing
         loopb = asyncio.new_event_loop()
         loopb.run_until_complete(self.clickmethod())
         loopb.close()
@@ -202,7 +178,6 @@ class Infobox(QWidget):
         """Search thing on click"""
         for i in reversed(range(self.grid_layout.count())):  # Clear grid
             self.grid_layout.itemAt(i).widget().setParent(None)
-
 
         # self.info.setText(await self.searchapi(self.line.text()))
 
@@ -213,9 +188,11 @@ class Infobox(QWidget):
 
         widthsize = 200
         width = math.floor((size.width() - 50) / widthsize)
+        output = output[:(width * 2)]
         height = math.ceil(len(output) / width)
-        newwidthsize = math.floor(((size.width() - 50) - ((width - 1) * 5)) / width)  # Get sizing and grid layout based on window size
-
+        newwidthsize = math.floor(
+            ((size.width() - 50) - ((width - 1) * 5)) / width
+        )  # Get sizing and grid layout based on window size
 
         # width = 1
         # height = len(output)
@@ -223,10 +200,12 @@ class Infobox(QWidget):
         i = 0
         for x in range(width):  # For each button
             for y in range(height):
-                if i == len(output): break
+                if i == len(output):
+                    break
                 button = QPushButton()  # Create the button
-                button.clicked.connect(partial(self.wrapseriesinfo, output, int(i)))  # Show info on click
-                button.setMinimumHeight(350)  # Size
+                button.clicked.connect(partial(
+                    self.wrapseriesinfo, output, int(i)))  # Show info on click
+                button.setMinimumHeight(int((size.height() - 450) / 2))  # Size
                 button.setMaximumWidth(newwidthsize)
                 buttontxt = QLabel(self)  # Text inside button
                 buttontxt.setText(output[i].title)
@@ -245,13 +224,17 @@ class Infobox(QWidget):
             break  # But it's a bit broken so the break just skips over it for now
 
             for y in range(height):
-                if i == len(output): break
+                if i == len(output):
+                    break
                 # thumb = output[i].thumbnail
                 try:
-                    thumb = (await m.get_comic(output[i].comics.items[-1].resourceURI.split('/')[-1])).data.results[0].images[0]
+                    thumb = (await m.get_comic(
+                        output[i].comics.items[-1].resourceURI.split('/')[-1]
+                    )).data.results[0].images[0]
                 except IndexError:
                     thumb = output[i].thumbnail
-                thumbnail = thumb.path + '/portrait_incredible.' + thumb.extension
+                thumbnail = (
+                    thumb.path + '/portrait_incredible.' + thumb.extension)
                 # thumbnail = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/1200px-Google_%22G%22_Logo.svg.png"
 
                 async with aiohttp.ClientSession() as cs:
@@ -269,8 +252,8 @@ class Infobox(QWidget):
                 print(self.grid_layout.count())
                 i += 1
 
-        self.info.setText(f"Showing the top {self.grid_layout.count()} result(s)")
-
+        self.info.setText(
+            f"Showing the top {self.grid_layout.count()} result(s)")
 
     def wrapseriesinfo(self, output, i):
         """Runs the asyncronous function through a non-asyncronous function"""
@@ -282,14 +265,15 @@ class Infobox(QWidget):
         """Turns raw info into a nice String"""
         # print(series.description)
         desc = series.description if series.description else 'No description'
-        textlist = [series.title, desc, ', '.join([i.name for i in series.creators.items if i.role == 'writer'])]
+        textlist = [series.title, desc, ', '.join([
+            i.name for i in series.creators.items if i.role == 'writer'
+        ])]
         text = '\n'.join(textlist)
         self.info.setText(text)
 
-
-
     async def searchapi(self, x):
         """Searches API from query"""
+
         # character_data_wrapper = await m.get_characters(orderBy="name,-modified", limit="5", offset="15")
         # x = ', '.join([character.name for character in character_data_wrapper.data.results])
 
@@ -298,14 +282,25 @@ class Infobox(QWidget):
 
         # return y
 
+        comicfull = await m.get_series(
+            titleStartsWith=x,
+            limit='100',
+            orderBy="-startYear")  # Searches
+        comiccoll = await m.get_series(
+            titleStartsWith=x,
+            limit='100',
+            orderBy="-startYear",
+            seriesType='collection')  # Searches, but only for collections
 
-        comicfull = await m.get_series(titleStartsWith = x, limit = '100', orderBy = "-startYear")  # Searches
-        comiccoll = await m.get_series(titleStartsWith = x, limit = '100', orderBy = "-startYear", seriesType = 'collection')  # Searches, but only for collections
+        try:
+            comicfullt = comicfull.data.dict['total']
+        except KeyError:
+            comicfullt = 0
 
-        try: comicfullt = comicfull.data.dict['total']
-        except KeyError: comicfullt = 0
-        try: comiccollt = comiccoll.data.dict['total']
-        except KeyError: comiccollt = 0
+        try:
+            comiccollt = comiccoll.data.dict['total']
+        except KeyError:
+            comiccollt = 0
 
         limit = 20
 
@@ -315,10 +310,11 @@ class Infobox(QWidget):
         oresults = [i.dict for i in comiccoll.data.results]
         x = 0
         for i in comicfull.data.results:  # Compares full list with collection list, and removes any collections
-            if i.dict not in oresults: 
+            if i.dict not in oresults:
                 nresults.append(i.dict)
                 x += 1
-            if x >= limit: break
+            if x >= limit:
+                break
 
         nwrapper = comicfull.dict
         nwrapper['data']['total'] = ntotal
